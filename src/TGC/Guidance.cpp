@@ -87,7 +87,15 @@ namespace ModelDevelop::TGC {
             gc_info.pitch_cmd_valid = glideInfo.pitch_cmd_valid;
             gc_info.theta_cmd = glideInfo.pitch_cmd;
         } else if (inDiveEnvelope) {
-            return getDiveGCInfo(flyTime, targetPosEcf, targetVelEcf, state, maxLoad, diveConfig);
+            gc_info.phase = GuidancePhase::DiveTerminal;
+            gc_info.losInfo = los_terminal;
+
+            const auto diveInfo = calculateDiveGuidance(flyTime, P, Mass, targetPosEcf, targetVelEcf, maxLoad, state);
+            acc_cmd_v = diveInfo.acc_cmd_v;
+            gc_info.tvc_cmd = diveInfo.tvc_cmd;
+            gc_info.pitch_cmd = diveInfo.pitch_cmd;
+            gc_info.pitch_cmd_valid = diveInfo.pitch_cmd_valid;
+            gc_info.theta_cmd = diveInfo.pitch_cmd;
         }
 
         acc_cmd_v.y() = clamp(acc_cmd_v.y(), -9.8 * maxLoad, 9.8 * maxLoad);
@@ -182,23 +190,13 @@ namespace ModelDevelop::TGC {
 
         if (phase == GuidancePhase::DiveHandover || phase == GuidancePhase::DiveTerminal) {
             auto terminalAccCmd = guidance_pn(theta, losTerminal.sigma_az_dot, losTerminal.sigma_elv_dot, losTerminal.dis_dot);
-            if (_lastTerminalAccCmd.has_value() && _lastTerminalAccCmdTime.has_value() && flyTime > *_lastTerminalAccCmdTime) {
-                const double dt = flyTime - *_lastTerminalAccCmdTime;
-                const Eigen::Vector3d rawDelta = terminalAccCmd - *_lastTerminalAccCmd;
-                const double maxDelta = std::max(0.0, config.pnAccRateLimit) * dt;
-                if (rawDelta.norm() > maxDelta && maxDelta > 0.0) {
-                    terminalAccCmd = *_lastTerminalAccCmd + rawDelta.normalized() * maxDelta;
-                }
-                const double filterAlpha = dt / (std::max(0.0, config.pnFilterTimeConstant) + dt);
-                terminalAccCmd = *_lastTerminalAccCmd + filterAlpha * (terminalAccCmd - *_lastTerminalAccCmd);
-            }
             _lastTerminalAccCmd = terminalAccCmd;
             _lastTerminalAccCmdTime = flyTime;
 
             const double distanceBlend = computeBlendRatio(targetDis, config.handoverDistance, 0.0);
             const double timeBlend = std::isfinite(timeToGo) ? computeBlendRatio(timeToGo, config.terminalTime, 0.0) : 0.0;
             const double blendRatio = seekerLocked || phase == GuidancePhase::DiveTerminal ? std::max(distanceBlend, timeBlend) : 0.0;
-            gcInfo.acc_cmd_v = (1.0 - blendRatio) * diveAccCmd + blendRatio * terminalAccCmd;
+            gcInfo.acc_cmd_v =  terminalAccCmd;
             gcInfo.handoverRatio = blendRatio;
         } else {
             _lastTerminalAccCmd = std::nullopt;
@@ -330,6 +328,35 @@ namespace ModelDevelop::TGC {
         glideInfo.pitch_cmd = std::atan2(accCmdV.y() - 9.8 * std::cos(theta), std::max(speed, 1.0));
         glideInfo.pitch_cmd_valid = false;
         return glideInfo;
+    }
+
+    Guidance::BoostGuidanceInfo Guidance::calculateDiveGuidance(const double flyTime, const double P, const double Mass,
+                                                                const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf,
+                                                                const double maxLoad, const State &state) {
+        (void) flyTime;
+        (void) P;
+        (void) Mass;
+
+        BoostGuidanceInfo diveInfo;
+
+        const auto lla = ModelDevelop::Utils::CoordinateHelper::ecefToLla(state.posEcf);
+        const auto velocityNue = ModelDevelop::Utils::CoordinateHelper::ecefToNueVelocity(state.velEcf, lla.x(), lla.y());
+        const double speed = velocityNue.norm();
+        if (speed < 1.0e-6) {
+            return diveInfo;
+        }
+
+        const double theta = ModelDevelop::Utils::CoordinateHelper::getTheta(velocityNue);
+        const auto losToTarget = _seeker.getLOSInfo(targetPosEcf, targetVelEcf, state);
+
+        Eigen::Vector3d accCmdV = guidance_pn(theta, losToTarget.sigma_az_dot, losToTarget.sigma_elv_dot, losToTarget.dis_dot);
+        accCmdV.y() = clamp(accCmdV.y(), -9.8 * maxLoad, 9.8 * maxLoad);
+        accCmdV.z() = clamp(accCmdV.z(), -9.8 * maxLoad, 9.8 * maxLoad);
+
+        diveInfo.acc_cmd_v = accCmdV;
+        diveInfo.pitch_cmd = std::atan2(accCmdV.y() - 9.8 * std::cos(theta), std::max(speed, 1.0));
+        diveInfo.pitch_cmd_valid = false;
+        return diveInfo;
     }
 
     LosInfo Guidance::getLOSInfo(const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state) {
@@ -466,7 +493,7 @@ namespace ModelDevelop::TGC {
     }
 
     Eigen::Vector3d Guidance::guidance_pn(const double theta, const double sigma_az_dot, const double sigma_elv_dot, const double dis_dot) {
-        constexpr double K = 2;
+        constexpr double K = 4;
         constexpr double gravity = 9.8;
         const auto ny_tc = K * std::fabs(dis_dot) * sigma_elv_dot + gravity * std::cos(theta);
         const auto nz_tc = -K * std::fabs(dis_dot) * sigma_az_dot;

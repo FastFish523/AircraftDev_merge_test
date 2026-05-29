@@ -212,6 +212,9 @@ namespace ModelDevelop::TGC {
         BoostGuidanceInfo calculateGlideGuidance(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, double maxLoad,
                                                  const State &state);
 
+        BoostGuidanceInfo calculateDiveGuidance(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf,
+                                                double maxLoad, const State &state);
+
         static double smoothStep(double ratio);
 
         static double computeBlendRatio(double targetDistance, double startDistance, double endDistance);

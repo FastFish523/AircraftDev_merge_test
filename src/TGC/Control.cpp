@@ -89,6 +89,10 @@ namespace ModelDevelop::TGC {
         const double wx         = imu_info.imu_w_xyz_body.x();
         const double wy         = imu_info.imu_w_xyz_body.y();
         const double wz         = imu_info.imu_w_xyz_body.z();
+        constexpr double rudderLimit = 45.0 / 57.3;
+        constexpr double rudderRateLimit = 120.0 / 57.3;
+        constexpr double rateDamping = 0.05;
+        constexpr double integratorLimit = 10.0;
 
         if (rel_dis > rel_dis_dot * step * 40) {
             ex = 0 - imu_info.imu_ypr.z();
@@ -99,17 +103,24 @@ namespace ModelDevelop::TGC {
             iex += (pre_ex + ex) * 0.5 * step;
             iey += (pre_ey + ey) * 0.5 * step;
             iez += (pre_ez + ez) * 0.5 * step;
+            iex = limit(iex, -integratorLimit, integratorLimit);
+            iey = limit(iey, -integratorLimit, integratorLimit);
+            iez = limit(iez, -integratorLimit, integratorLimit);
             pre_ex = ex;
             pre_ey = ey;
             pre_ez = ez;
 
-            rudder.z() = -alpha_cmd + 0.5 * wz + 1 * (-0.001 * ez - 0.01 * iez);
-            rudder.y() = -beta_cmd + 0.5 * wy + 1 * (+0.0001 * ey + 0.005 * iey);
+            rudder.z() = -alpha_cmd + rateDamping * wz + (-0.001 * ez - 0.01 * iez);
+            rudder.y() = -beta_cmd + rateDamping * wy + (+0.0001 * ey + 0.005 * iey);
             rudder.x() = 0.8 * wx - 4.0 * ex - 0.1 * iex;
 
-            rudder.z() = limit(rudder.z(), -45 / 57.3, 45 / 57.3);
-            rudder.y() = limit(rudder.y(), -45 / 57.3, 45 / 57.3);
-            rudder.x() = limit(rudder.x(), -45 / 57.3, 45 / 57.3);
+            rudder.z() = limit(rudder.z(), last_dz - rudderRateLimit * step, last_dz + rudderRateLimit * step);
+            rudder.y() = limit(rudder.y(), last_dy - rudderRateLimit * step, last_dy + rudderRateLimit * step);
+            rudder.x() = limit(rudder.x(), last_dx - rudderRateLimit * step, last_dx + rudderRateLimit * step);
+
+            rudder.z() = limit(rudder.z(), -rudderLimit, rudderLimit);
+            rudder.y() = limit(rudder.y(), -rudderLimit, rudderLimit);
+            rudder.x() = limit(rudder.x(), -rudderLimit, rudderLimit);
 
             last_dx = rudder.x();
             last_dy = rudder.y();

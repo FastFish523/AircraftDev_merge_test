@@ -219,7 +219,7 @@ namespace ModelDevelop::TGC {
         if (distance_deque.size() > 4) {
             distance_deque.pop_front();
         }
-        if (dis < 2000 && distance_deque.size() >= 4) {
+        if (dis < 10000 && distance_deque.size() >= 4) {
             bool increasing = false;
             for (auto it = distance_deque.begin(); it + 1 != distance_deque.end(); ++it) {
                 if (*it < *(it + 1)) {

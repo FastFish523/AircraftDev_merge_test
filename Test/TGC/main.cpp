@@ -38,7 +38,7 @@ int main() {
 
     constexpr double step = 0.01;
     const Eigen::Vector3d missileLLA = {120.0, 40.0, 10.0};
-    const Eigen::Vector3d targetLLA = {130.0, 35.0, 0.0};
+    const Eigen::Vector3d targetLLA = {140.0, 30.0, 0.0};
     const auto burnOutTimes = Engine::boostBurnOutTimes();
     const double maxSimTime = 1000;
 
