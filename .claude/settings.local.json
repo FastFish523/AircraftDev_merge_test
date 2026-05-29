@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/**)",
+      "Bash('D:/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/cmake.exe' --build F:/BUAA/1122/AircraftModelBase/ModelDev/ModelDev/cmake-build-debug)",
+      "Bash('D:/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/cmake.exe' --build F:/BUAA/1122/AircraftModelBase/ModelDev/ModelDev/cmake-build-debug -- -n)",
+      "PowerShell(Get-Command *)",
+      "Bash($CMAKE *)",
+      "Bash('D:/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/cmake.exe' --build F:/BUAA/1122/AircraftModelBase/ModelDev/ModelDev/cmake-build-debug -- -t targets)",
+      "Bash('D:/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/cmake.exe' --build F:/BUAA/1122/AircraftModelBase/ModelDev/ModelDev/cmake-build-debug -- TGCd.dll)",
+      "PowerShell(cmake *)",
+      "Bash(cmd.exe /c 'call \"D:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat\" && cd /d F:\\\\BUAA\\\\1122\\\\AircraftModelBase\\\\ModelDev\\\\ModelDev && \"D:/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/cmake.exe\" -B cmake-build-debug -G Ninja -DCMAKE_BUILD_TYPE=Debug 2>&1 && \"D:/Application/CLion 2025.2.4/bin/cmake/win/x64/bin/cmake.exe\" --build cmake-build-debug 2>&1')",
+      "Bash(cmd.exe /c \"call \\\\\"D:\\\\\\\\Program Files\\\\\\\\Microsoft Visual Studio\\\\\\\\2022\\\\\\\\Enterprise\\\\\\\\VC\\\\\\\\Auxiliary\\\\\\\\Build\\\\\\\\vcvars64.bat\\\\\" && cd /d F:\\\\\\\\BUAA\\\\\\\\1122\\\\\\\\AircraftModelBase\\\\\\\\ModelDev\\\\\\\\ModelDev && \\\\\"D:\\\\\\\\Application\\\\\\\\CLion 2025.2.4\\\\\\\\bin\\\\\\\\cmake\\\\\\\\win\\\\\\\\x64\\\\\\\\bin\\\\\\\\cmake.exe\\\\\" -B cmake-build-debug -G Ninja -DCMAKE_BUILD_TYPE=Debug && \\\\\"D:\\\\\\\\Application\\\\\\\\CLion 2025.2.4\\\\\\\\bin\\\\\\\\cmake\\\\\\\\win\\\\\\\\x64\\\\\\\\bin\\\\\\\\cmake.exe\\\\\" --build cmake-build-debug\")"
+    ]
+  }
+}
