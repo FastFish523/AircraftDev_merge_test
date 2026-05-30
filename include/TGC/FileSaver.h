@@ -81,10 +81,6 @@ namespace ModelDevelop::TGC {
 
         auto result_fp_traj() -> FILE *;
 
-        auto result_fp_boost() -> FILE *;
-
-        void save_boost_events(const Missile *missile);
-
 // endregion
     };
 }

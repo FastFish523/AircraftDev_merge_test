@@ -97,7 +97,6 @@ namespace ModelDevelop::TGC {
             missile->sigmaAzDot(),
             missile->phaseId()
         );
-        save_boost_events(missile);
     }
 
     void FileSaver::save_aero(const Missile *missile) {
@@ -164,59 +163,6 @@ namespace ModelDevelop::TGC {
         return fp_traj;
     }
 
-    auto FileSaver::result_fp_boost() -> FILE * {
-        if (!std::filesystem::exists(_directory)) {
-            std::filesystem::create_directories(_directory);
-        }
-        std::string filename = _directory + "boost_summary.dat";
-        if (!fp_boost) {
-            fp_boost = fopen(filename.c_str(), "w");
-            if (!fp_boost) {
-                printf("error: failed to open file\n");
-                exit(-1);
-            }
-            fprintf(fp_boost, "event time altitude velocity gamma tvc_dx tvc_dy tvc_dz\n");
-        }
-        return fp_boost;
-    }
-
-    void FileSaver::save_boost_events(const Missile *missile) {
-        const auto burnOutTimes = Engine::boostBurnOutTimes();
-        for (size_t i = 0; i < burnOutTimes.size(); ++i) {
-            if (!_boostEventsSaved[i] && missile->flyTime() + 1.0e-5 >= burnOutTimes[i]) {
-                const auto tvc = missile->tvcCommand();
-                fprintf(
-                    result_fp_boost(),
-                    "%zu %.6f %.6f %.6f %.6f %.6f %.6f %.6f\n",
-                    i + 1,
-                    missile->flyTime(),
-                    missile->lla().z(),
-                    missile->V(),
-                    missile->velocityTheta(),
-                    tvc.x(),
-                    tvc.y(),
-                    tvc.z()
-                );
-                _boostEventsSaved[i] = true;
-            }
-        }
-
-        if (!_boostEventsSaved[3] && missile->flyTime() > burnOutTimes.back() && missile->lla().z() <= 100000.0) {
-            const auto tvc = missile->tvcCommand();
-            fprintf(
-                result_fp_boost(),
-                "4 %.6f %.6f %.6f %.6f %.6f %.6f %.6f\n",
-                missile->flyTime(),
-                missile->lla().z(),
-                missile->V(),
-                missile->velocityTheta(),
-                tvc.x(),
-                tvc.y(),
-                tvc.z()
-            );
-            _boostEventsSaved[3] = true;
-        }
-    }
 
 // endregion
 }

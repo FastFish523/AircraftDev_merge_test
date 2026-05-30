@@ -98,10 +98,6 @@ namespace ModelDevelop::TGC {
         void setTargetLLA(const Eigen::Vector3d &targetPosLLa, const Eigen::Vector3d &targetVelEcf, const bool clearQueue);
 
         /*!
-         * @brief 设置路径点
-         * @param routes
-         */
-        /*!
          * @brief 仿真更新
          */
         double update();
@@ -166,6 +162,10 @@ namespace ModelDevelop::TGC {
             return ModelDevelop::Utils::CoordinateHelper::getTheta(vel_nue) * 57.3;
         }
 
+        /*!
+         * @brief 获取速度倾角指令 度
+         * @return
+         */
         [[nodiscard]]
         double thetaCmd() const {
             return _theta_cmd * 57.3;
@@ -356,10 +356,7 @@ namespace ModelDevelop::TGC {
             return _sigma_az_dot * 57.3;
         }
 
-        /*!
-         * @brief 气动导数计算
-         * @return
-         */
+
         [[nodiscard]] GuidancePhase phase() const {
             return _phase;
         }
