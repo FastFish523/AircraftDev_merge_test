@@ -74,8 +74,6 @@ namespace ModelDevelop::TGC {
         _launchFlag = false;
         _engine.reset();
         _guidance.reset();
-        _currentRouteId = 0;
-        _routePoints.clear();
         distance_deque.clear();
         _phase = GuidancePhase::Boost;
         _state.posEcf = ModelDevelop::Utils::CoordinateHelper::llaToEcef(lla);
@@ -131,19 +129,6 @@ namespace ModelDevelop::TGC {
         _targetVelEcf = targetVelEcf;
     }
 
-    void Missile::setRoutePoints(const std::deque<Eigen::Vector3d> &routes) {
-        if (routes.size() <= 1) {
-            std::cout << "min route point count is 2" << std::endl;
-            return;
-        }
-        _currentRouteId = 0;
-        _routePoints.clear();
-        _routePoints.push_back(lla());
-        for (const auto &r: routes) {
-            _routePoints.push_back(r);
-        }
-    }
-
     double Missile::update() {
         if (!_launchFlag)
             return -1;
@@ -161,7 +146,7 @@ namespace ModelDevelop::TGC {
         if (_targetPosEcf.has_value()) {
             LosInfo losInfo{};
 
-            const auto gcInfo = _guidance.getMissionGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad, _routePoints, _currentRouteId);
+            const auto gcInfo = _guidance.getMissionGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
             losInfo           = gcInfo.losInfo;
             const Eigen::Vector3d acc_cmd_v = gcInfo.acc_cmd_v;
             _tvcCommand       = gcInfo.tvc_cmd;
@@ -172,9 +157,6 @@ namespace ModelDevelop::TGC {
                 _inertia = _inertia + tvcEngineInfo.inertia;
             }
             _phase            = gcInfo.phase;
-            if (_currentRouteId == -1) {
-                _routePoints.clear();
-            }
             auto acc_cmd_b        = ModelDevelop::Utils::CoordinateHelper::velocityToBodyAcceleration(acc_cmd_v, this->alpha() / 57.3, this->beta() / 57.3);
             _acc_cmd_b_y          = acc_cmd_b.y();
             _acc_cmd_b_z          = acc_cmd_b.z();

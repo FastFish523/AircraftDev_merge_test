@@ -15,9 +15,7 @@
 #include <Eigen/Core>
 #include "Seeker.h"
 #include "State.h"
-#include <deque>
 #include <optional>
-#include <utility>
 // endregion
 // endregion
 
@@ -59,68 +57,12 @@ namespace ModelDevelop::TGC {
          * @param maxLoad 最大过载
          * @return
          */
-        GCInfo getMissionGCInfo(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad,
-                                const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
+        GCInfo getMissionGCInfo(double flyTime, double P, double Mass, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad);
 
         GCInfo getDiveGCInfo(double flyTime, const Eigen::Vector3d &targetPosEcf, const Eigen::Vector3d &targetVelEcf, const State &state, double maxLoad,
                              const DiveGuidanceConfig &config = DiveGuidanceConfig{});
 
-        /*!
-         * @brief 获取制导控制信息
-         * @param state 自身状态
-         * @param maxLoad 最大过载
-         * @param waypoints
-         * @param currentWpIndex
-         * @return
-         */
-        GCInfo getGCInfoRouteL1(const State &state, double maxLoad, const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
-
         void reset();
-
-        /*!
-         * @brief l1制导律调用入口
-         * @param maxLoad 最大过载
-         * @param currentPosEcf 当前位置
-         * @param currentVelEcf 当前速度
-         * @param waypoints 航点（经度，纬度，高度）
-         * @param currentWpIndex 当前航段起点索引（会被更新）
-         * @return 侧向加速度指令   巡航高度
-         */
-        std::pair<double, double> calculateL1Guidance(double maxLoad, const Eigen::Vector3d &currentPosEcf, const Eigen::Vector3d &currentVelEcf,
-                                                      const std::deque<Eigen::Vector3d> &waypoints, int &currentWpIndex);
-
-        /*!
-        * @brief 核心L1制导算法 - 修正版
-        * @param pos_nue 当前位置[N, E]（忽略天向）
-        * @param vel_nue 当前速度[N, E]
-        * @param wp_start 航段起点[N, E]
-        * @param wp_end 航段终点[N, E]
-        * @param L1_distance L1距离
-        * @return 横向加速度（m/s²）
-        */
-        double calculateL1GuidanceNUE(const Eigen::Vector2d &pos_nue, const Eigen::Vector2d &vel_nue, const Eigen::Vector2d &wp_start, const Eigen::Vector2d &wp_end,
-                                      double L1_distance = 100.0);
-
-        /*!
-         * @brief 兰伯特1
-         * @param r_m 起始点ecf坐标
-         * @param r_pip 落点ecf坐标
-         * @param T_pip 飞行时间 s
-         * @param vd_m 发射速度向量ecf
-         * @param Range 射程
-         */
-        void Lambert_Resolve_Dv1(const Eigen::Vector3d &r_m, const Eigen::Vector3d &r_pip, double &T_pip, double vd_m[3], double &Range) const;
-
-        /*!
-         * @brief 兰伯特
-         * @param r_m 起始点ecf坐标
-         * @param r_pip 落点ecf坐标
-         * @param T_pip 飞行时间 s
-         * @param vd_m 发射速度向量ecf
-         * @param Range 射程
-         */
-        void Lambert_Resolve_Dv(const Eigen::Vector3d &r_m, const Eigen::Vector3d &r_pip, double &T_pip, double vd_m[3], double &Range) const;
-
 // endregion
 
 // region Get/Set选择器
@@ -136,7 +78,6 @@ namespace ModelDevelop::TGC {
         /*!
          * @brief 上一个预期高度
          */
-        double lastDesiredH = 0;
         double lastBankSign = 1.0;
         std::optional<double> boostInitialPsi = std::nullopt;
         std::optional<double> _lastDiveThetaCmd = std::nullopt;

@@ -27,17 +27,6 @@ namespace ModelDevelop::TGC {
 // region Static Attributes Init
 // endregion
 
-    namespace {
-        void write_route_marker_row(FILE *fp_traj, const Eigen::Vector3d &routePointNue) {
-            constexpr int columnCount = 42;
-            fprintf(fp_traj, "-1.000000 %.6f %.6f %.6f", routePointNue.x(), routePointNue.y(), routePointNue.z());
-            for (int i = 4; i < columnCount; ++i) {
-                fprintf(fp_traj, " nan");
-            }
-            fprintf(fp_traj, "\n");
-        }
-    }
-
 // region USING/FRIEND
 // endregion
 
@@ -62,7 +51,6 @@ namespace ModelDevelop::TGC {
 
 // region Public Methods
     void FileSaver::save_traj(const Missile *missile) {
-        save_route_points(missile);
         fprintf(
             result_fp_traj(),
             "%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %d\n",
@@ -190,24 +178,6 @@ namespace ModelDevelop::TGC {
             fprintf(fp_boost, "event time altitude velocity gamma tvc_dx tvc_dy tvc_dz\n");
         }
         return fp_boost;
-    }
-
-    void FileSaver::save_route_points(const Missile *missile) {
-        if (_routePointsSaved) {
-            return;
-        }
-
-        const auto routePointsNue = missile->routePointsLaunchNUE();
-        if (routePointsNue.empty()) {
-            _routePointsSaved = true;
-            return;
-        }
-
-        auto *fp_traj = result_fp_traj();
-        for (const auto &routePointNue: routePointsNue) {
-            write_route_marker_row(fp_traj, routePointNue);
-        }
-        _routePointsSaved = true;
     }
 
     void FileSaver::save_boost_events(const Missile *missile) {

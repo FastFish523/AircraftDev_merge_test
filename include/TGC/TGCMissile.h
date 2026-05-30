@@ -101,8 +101,6 @@ namespace ModelDevelop::TGC {
          * @brief 设置路径点
          * @param routes
          */
-        void setRoutePoints(const std::deque<Eigen::Vector3d> &routes);
-
         /*!
          * @brief 仿真更新
          */
@@ -119,19 +117,6 @@ namespace ModelDevelop::TGC {
         [[nodiscard]]
         double flyTime() const {
             return _flyTime;
-        }
-
-        [[nodiscard]]
-        std::deque<Eigen::Vector3d> routePointsLaunchNUE() const {
-            std::deque<Eigen::Vector3d> routePointsNue;
-            for (size_t i = 1; i < _routePoints.size(); ++i) {
-                const auto &routePointLla = _routePoints[i];
-                routePointsNue.push_back(ModelDevelop::Utils::CoordinateHelper::ecefToNuePosition(
-                    ModelDevelop::Utils::CoordinateHelper::llaToEcef(routePointLla),
-                    _launchLLA.x(),
-                    _launchLLA.y()));
-            }
-            return routePointsNue;
         }
 
         /*!

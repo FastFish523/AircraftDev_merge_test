@@ -72,7 +72,6 @@ namespace ModelDevelop::TGC {
          */
         FILE *fp_aero = nullptr;
         FILE *fp_boost = nullptr;
-        bool _routePointsSaved = false;
         std::array<bool, 4> _boostEventsSaved{false, false, false, false};
 // endregion
 
@@ -83,8 +82,6 @@ namespace ModelDevelop::TGC {
         auto result_fp_traj() -> FILE *;
 
         auto result_fp_boost() -> FILE *;
-
-        void save_route_points(const Missile *missile);
 
         void save_boost_events(const Missile *missile);
 
