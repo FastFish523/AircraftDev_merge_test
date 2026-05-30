@@ -22,12 +22,6 @@
 // endregion
 
 namespace ModelDevelop::TGC {
-    namespace {
-        GuidancePhase keepForwardPhase(const GuidancePhase currentPhase, const GuidancePhase candidatePhase) {
-            return static_cast<int>(candidatePhase) < static_cast<int>(currentPhase) ? currentPhase : candidatePhase;
-        }
-    }
-
 // region Static Attributes Init
 // endregion
 
@@ -177,7 +171,7 @@ namespace ModelDevelop::TGC {
                 _totalMass = _mass + tvcEngineInfo.mass;
                 _inertia = _inertia + tvcEngineInfo.inertia;
             }
-            _phase            = keepForwardPhase(_phase, gcInfo.phase);
+            _phase            = gcInfo.phase;
             if (_currentRouteId == -1) {
                 _routePoints.clear();
             }
@@ -426,9 +420,9 @@ namespace ModelDevelop::TGC {
     const char *Missile::phaseName() const {
         switch (_phase) {
             case GuidancePhase::Boost:
-                return "boost";
+                return "boost_send";
             case GuidancePhase::Climb:
-                return "climb";
+                return "boost_climb";
             case GuidancePhase::Glide:
                 return "glide";
             case GuidancePhase::Handover:

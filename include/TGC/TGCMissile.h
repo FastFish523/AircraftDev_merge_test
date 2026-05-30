@@ -389,11 +389,7 @@ namespace ModelDevelop::TGC {
 
 // region Private Attributes
     private:
-        int _currentRouteId = 0;
-        /*!
-         * @brief 路径点
-         */
-        std::deque<Eigen::Vector3d> _routePoints{};
+
         /*!
          * @brief 仿真步长
          */
