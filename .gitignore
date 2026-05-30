@@ -37,7 +37,6 @@
 .idea/
 
 out/
-_Build/
 cmake-build-debug/
 cmake-build-release/
 cmake-build-debug-visual-studio/

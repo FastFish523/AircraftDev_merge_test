@@ -134,6 +134,7 @@ namespace ModelDevelop::TGC {
             return -1;
         _rudder.setZero();
         _tvcCommand.setZero();
+        _acc_cmd_v.setZero();
         _p_body.setZero();
         _m_body.setZero();
 
@@ -149,6 +150,7 @@ namespace ModelDevelop::TGC {
             const auto gcInfo = _guidance.getMissionGCInfo(flyTime(), _p_body.norm(), _totalMass, _targetPosEcf.value(), _targetVelEcf, _state, _maxLoad);
             losInfo           = gcInfo.losInfo;
             const Eigen::Vector3d acc_cmd_v = gcInfo.acc_cmd_v;
+            _acc_cmd_v        = acc_cmd_v;
             _tvcCommand       = gcInfo.tvc_cmd;
             if (_tvcCommand.squaredNorm() > 0.0) {
                 const auto tvcEngineInfo = _engine.getEigenInfo(_step, _flyTime, _state, _tvcCommand.x(), _tvcCommand.y(), _tvcCommand.z());

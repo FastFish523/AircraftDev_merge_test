@@ -265,6 +265,13 @@ namespace ModelDevelop::TGC {
             return ModelDevelop::Utils::CoordinateHelper::ecefToNuePosition(_state.posEcf, _launchLLA.x(), _launchLLA.y());
         }
 
+        Eigen::Vector3d targetLLA() const {
+            if (_targetPosEcf.has_value()) {
+                return ModelDevelop::Utils::CoordinateHelper::ecefToLla(_targetPosEcf.value());
+            }
+            return lla();
+        }
+
         /*
          * @brief 获取舵偏 度
          * @return
@@ -322,6 +329,18 @@ namespace ModelDevelop::TGC {
         */
         [[nodiscard]] auto acc_cmd_b_z() const -> double {
             return _acc_cmd_b_z;
+        }
+
+        [[nodiscard]] auto acc_cmd_v_x() const -> double {
+            return _acc_cmd_v.x();
+        }
+
+        [[nodiscard]] auto acc_cmd_v_y() const -> double {
+            return _acc_cmd_v.y();
+        }
+
+        [[nodiscard]] auto acc_cmd_v_z() const -> double {
+            return _acc_cmd_v.z();
         }
 
         /*!
@@ -439,6 +458,7 @@ namespace ModelDevelop::TGC {
          * @brief 体侧向加速度指令
          */
         double _acc_cmd_b_z = 0;
+        Eigen::Vector3d _acc_cmd_v{0, 0, 0};
         double _theta_cmd = std::numeric_limits<double>::quiet_NaN();
 
         /*! 
