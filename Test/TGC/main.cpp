@@ -15,7 +15,7 @@ namespace {
     constexpr double kStep = 0.005;
     constexpr double kMaxSimTime = 1000.0;
     const Eigen::Vector3d kMissileLLA = {120.0, 40.0, 10.0};
-    const Eigen::Vector3d kTargetLLA = {140.0, 5.0, 0.0};
+    const Eigen::Vector3d kTargetLLA = {140.0, 20.0, 0.0};
 
     constexpr double kStatusPrintInterval = 200.0;
     constexpr double kGroundStopAltitude = -50.0;

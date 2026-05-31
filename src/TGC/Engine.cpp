@@ -54,8 +54,6 @@ namespace ModelDevelop::TGC {
                 const double remainingPropellant = std::max(0.0, stage.propellantMass - propellantFlow * burnedTime);
                 mountedMass += dryMass + remainingPropellant;
                 thrust = stage.thrust;
-            } else if (i == boostStages.size() - 1) {
-                mountedMass += dryMass;
             }
 
             stageStartTime = stageEndTime;
