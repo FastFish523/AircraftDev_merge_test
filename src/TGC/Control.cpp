@@ -96,10 +96,10 @@ namespace ModelDevelop::TGC {
 
         if (rel_dis > rel_dis_dot * step * 40) {
             ex = 0 - imu_info.imu_ypr.z();
-            //ey = acc_cmd_body.z() - imu_info.imu_acc_body.z();
-            ey = beta_cmd - beta;
-            //ez = acc_cmd_body.y() - imu_info.imu_acc_body.y();
-            ez = alpha_cmd - alpha;
+            ey = acc_cmd_body.z() - imu_info.imu_acc_body.z();
+            //ey = beta_cmd - beta;
+            ez = acc_cmd_body.y() - imu_info.imu_acc_body.y();
+            //ez = alpha_cmd - alpha;
             iex += (pre_ex + ex) * 0.5 * step;
             iey += (pre_ey + ey) * 0.5 * step;
             iez += (pre_ez + ez) * 0.5 * step;
