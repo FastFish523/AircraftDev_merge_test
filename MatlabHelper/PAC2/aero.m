@@ -42,9 +42,9 @@ for Ma=[1.2]
         CL = CN * alpha ;
         CZ = -CN * beta ;
         
-        l = - CN*dx*cg_cf * 0.05;
-        m = -CL*cg_cf - CN*dz*cg_cf*rudder_rate;
-        n = CZ*cg_cf - CN*dy*cg_cf*rudder_rate;
+        l = - CN*dx*cg_cf * 0.05;                   %滚转
+        m = -CL*cg_cf - CN*dz*cg_cf*rudder_rate;    %俯仰
+        n = CZ*cg_cf - CN*dy*cg_cf*rudder_rate;     %偏航
 
         A(i) = alpha*57.3;
         L(i) = CL;
