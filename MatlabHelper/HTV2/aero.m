@@ -28,7 +28,7 @@ dx = 0;
 dy = 0;
 dz = 0;
 rudder_rate = 1;
-j=1;
+j=80;
 for Ma=[8]
     V = Ma*340;
     f=0.5*rho*V*V*S;
@@ -45,9 +45,9 @@ for Ma=[8]
         CL = CN * alpha *f;
         CZ = -CN * beta *f;
         
-        l = - CN*dx*cg_cf * 0.001;                   %滚转
-        m = -CL*cg_cf - CN*dz*cg_cf*rudder_rate;    %俯仰
-        n = CZ*cg_cf - CN*dy*cg_cf*rudder_rate;     %偏航
+        l = - CN /f *dx*cg_cf * 0.001;                   %滚转
+        m = -CL/f*cg_cf - CN*dz*cg_cf*rudder_rate;    %俯仰
+        n = CZ/f*cg_cf - CN*dy*cg_cf*rudder_rate;     %偏航
 
         A(i) = alpha*57.3;
         L(i) = CL;
